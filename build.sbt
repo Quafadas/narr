@@ -7,18 +7,19 @@ val appVersion:String = "0.0"
 val globalScalaVersion = "3.3.3"
 
 ThisBuild / tlSitePublishBranch := Some("main")
-ThisBuild / tlBaseVersion := "0.9"
+ThisBuild / tlBaseVersion := "0.0"
 ThisBuild / organization := "io.github.quafadas"
 ThisBuild / organizationName := "quafadas"
 ThisBuild / licenses := Seq(License.Apache2)
+ThisBuild / startYear := Some(2023)
 ThisBuild / developers := List(
   // your GitHub handle and name
-  tlGitHubDev("quafadas", "Simon Parten")
+  tlGitHubDev("quafadas", "Simon Parten"),
+  tlGitHubDev("dragonfly-ai", "dragonfly.ai" )
 )
 ThisBuild / scalaVersion := globalScalaVersion
-
 ThisBuild / tlBaseVersion := appVersion
-ThisBuild / tlCiReleaseBranches := Seq()
+ThisBuild / tlCiReleaseBranches := Seq("main")
 ThisBuild / tlSonatypeUseLegacyHost := false
 
 lazy val narr = crossProject(JSPlatform, JVMPlatform, NativePlatform)
