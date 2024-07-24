@@ -20,6 +20,7 @@ ThisBuild / developers := List(
 ThisBuild / scalaVersion := globalScalaVersion
 ThisBuild / tlBaseVersion := appVersion
 ThisBuild / tlCiReleaseBranches := Seq("main")
+
 ThisBuild / tlSonatypeUseLegacyHost := false
 
 lazy val narr = crossProject(JSPlatform, JVMPlatform, NativePlatform)
