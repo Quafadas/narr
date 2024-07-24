@@ -4,7 +4,7 @@ import laika.helium.Helium
 import laika.helium.config.{HeliumIcon, IconLink}
 
 val appVersion:String = "0.105"
-val globalScalaVersion = "3.3.1"
+val globalScalaVersion = "3.3.3"
 
 ThisBuild / organization := "ai.dragonfly"
 ThisBuild / organizationName := "dragonfly.ai"
@@ -64,5 +64,5 @@ lazy val tests = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .dependsOn(narr)
   .settings(
     name := "narr-tests",
-    libraryDependencies += "org.scalameta" %%% "munit" % "1.0.0-M10" % Test
+    libraryDependencies += "org.scalameta" %%% "munit" % "1.0.0" % Test
   )
