@@ -6,11 +6,15 @@ import laika.helium.config.{HeliumIcon, IconLink}
 val appVersion:String = "0.105"
 val globalScalaVersion = "3.3.3"
 
-ThisBuild / organization := "ai.dragonfly"
-ThisBuild / organizationName := "dragonfly.ai"
-ThisBuild / startYear := Some(2023)
+ThisBuild / tlSitePublishBranch := Some("main")
+ThisBuild / tlBaseVersion := "0.9"
+ThisBuild / organization := "io.github.quafadas"
+ThisBuild / organizationName := "quafadas"
 ThisBuild / licenses := Seq(License.Apache2)
-ThisBuild / developers := List( tlGitHubDev("dragonfly-ai", "dragonfly.ai" ) )
+ThisBuild / developers := List(
+  // your GitHub handle and name
+  tlGitHubDev("quafadas", "Simon Parten")
+)
 ThisBuild / scalaVersion := globalScalaVersion
 
 ThisBuild / tlBaseVersion := appVersion
