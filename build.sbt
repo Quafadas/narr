@@ -4,7 +4,7 @@ import laika.helium.Helium
 import laika.helium.config.{HeliumIcon, IconLink}
 
 val appVersion:String = "0.0"
-val globalScalaVersion = "3.3.3"
+val globalScalaVersion = "3.3.4"
 
 ThisBuild / tlSitePublishBranch := Some("main")
 ThisBuild / tlBaseVersion := "0.0"
