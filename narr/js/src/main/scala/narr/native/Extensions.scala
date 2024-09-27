@@ -281,7 +281,7 @@ object Extensions {
     /**
      * @return an iterator for this AT
      */
-    inline def iterator: Iterator[T] = new scala.collection.AbstractIterator[T] {
+    def iterator: Iterator[T] = new scala.collection.AbstractIterator[T] {
       var i: Int = -1
       override val knownSize: Int = a.length
       val end: Int = knownSize - 1
@@ -313,7 +313,7 @@ object Extensions {
      *
      * @return an iterator yielding the elements of this array in reversed order
      */
-    inline def reverseIterator: Iterator[T] = new scala.collection.AbstractIterator[T] {
+    def reverseIterator: Iterator[T] = new scala.collection.AbstractIterator[T] {
       private[this] var i: Int = a.length
       override val knownSize: Int = a.length
       val end: Int = 0
