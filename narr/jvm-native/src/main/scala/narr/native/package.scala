@@ -36,10 +36,65 @@ package object native {
   type NArr[T] = Array[T]
   type SortableNArr[T] = Array[T]
 
-  inline def makeNativeArrayOfSize[A:ClassTag](n:Int):NativeArray[A] = new Array[A](n)
+  inline def makeNativeArrayOfSize[A](n:Int)(using ClassTag[A]):NativeArray[A] = new Array[A](n)
 
   object NArray {
     export Array.*
+
+    /** Copy one array to another.
+     *
+     * Note that the passed-in `dest` array will be modified by this call.
+     *
+     * @param src     the source array.
+     * @param dest    destination array.
+     * @param destPos starting position in the destination array.
+     * @see `java.lang.System#arraycopy`
+     */
+    inline def copyByteArray(src: ByteArray, dest: ByteArray, destPos: Int): Unit = Array.copy(src, 0, dest, destPos, src.length)
+    inline def copyShortArray(src: ShortArray, dest: ShortArray, destPos: Int): Unit = Array.copy(src, 0, dest, destPos, src.length)
+    inline def copyIntArray(src: IntArray, dest: IntArray, destPos: Int): Unit = Array.copy(src, 0, dest, destPos, src.length)
+    inline def copyFloatArray(src: FloatArray, dest: FloatArray, destPos: Int): Unit = Array.copy(src, 0, dest, destPos, src.length)
+    inline def copyDoubleArray(src: DoubleArray, dest: DoubleArray, destPos: Int): Unit = Array.copy(src, 0, dest, destPos, src.length)
+    inline def copyNativeArray[T](src: NArray[T], dest: NArray[T], destPos: Int): Unit = Array.copy(src, 0, dest, destPos, src.length)
+
+    /** Copy one array to another.
+     * Equivalent to Java's
+     * `System.arraycopy(src, srcPos, dest, destPos, length)`,
+     * except that this also works for polymorphic and boxed arrays.
+     *
+     * Note that the passed-in `dest` array will be modified by this call.
+     *
+     * @param src     the source array.
+     * @param srcPos  starting position in the source array.
+     * @param dest    destination array.
+     * @param destPos starting position in the destination array.
+     * @param length  the number of array elements to be copied.
+     * @see `java.lang.System#arraycopy`
+     */
+    inline def copyByteArray(src: ByteArray, srcPos: Int, dest: ByteArray, destPos: Int, length: Int): Unit = java.lang.System.arraycopy(src, srcPos, dest, destPos, length)
+    inline def copyShortArray(src: ShortArray, srcPos: Int, dest: ShortArray, destPos: Int, length: Int): Unit = java.lang.System.arraycopy(src, srcPos, dest, destPos, length)
+    inline def copyIntArray(src: IntArray, srcPos: Int, dest: IntArray, destPos: Int, length: Int): Unit = java.lang.System.arraycopy(src, srcPos, dest, destPos, length)
+    inline def copyFloatArray(src: FloatArray, srcPos: Int, dest: FloatArray, destPos: Int, length: Int): Unit = java.lang.System.arraycopy(src, srcPos, dest, destPos, length)
+    inline def copyDoubleArray(src: DoubleArray, srcPos: Int, dest: DoubleArray, destPos: Int, length: Int): Unit = java.lang.System.arraycopy(src, srcPos, dest, destPos, length)
+    inline def copyNativeArray[T](src: NativeArray[T], srcPos: Int, dest: NativeArray[T], destPos: Int, length: Int): Unit = Array.copy(src, srcPos, dest, destPos, length)
+
+    /** Copy one array to another, truncating or padding with default values (if
+     * necessary) so the copy has the specified length. The new array can have
+     * a different type than the original one as long as the values are
+     * assignment-compatible. When copying between primitive and object arrays,
+     * boxing and unboxing are supported.
+     *
+     * Equivalent to Java's
+     * `java.util.Arrays.copyOf(original, newLength, newType)`,
+     * except that this works for all combinations of primitive and object arrays
+     * in a single method.
+     *
+     * @see `java.util.Arrays#copyOf`
+     */
+    inline def copyAs[T, B >: T](original: NArray[T], newLength: Int)(using ClassTag[B]): NArray[B] = {
+      Array.copyAs[B](original, newLength)
+    }
+
   }
 
   object Extensions {
@@ -114,6 +169,51 @@ package object native {
         case nArr: Array[String] => util.Arrays.copyOf(nArr, nArr.length)
         case _ => util.Arrays.copyOf[T](a.asInstanceOf[Array[AnyRef & T]], a.length)
       }).asInstanceOf[NArr[T] & NArray[T]]
+
+      /** Copy elements of this array to another array.
+       * Fills the given array `xs` starting at index 0.
+       * Copying will stop once either all the elements of this array have been copied,
+       * or the end of the array is reached.
+       *
+       * @param xs the array to fill.
+       * @tparam B the type of the elements of the array.
+       */
+      inline def copyToNArray[B >: T](xs: NArray[B]): Int = a.copyToArray(xs)
+
+      /** Copy elements of this array to another array.
+       * Fills the given array `xs` starting at index `start`.
+       * Copying will stop once either all the elements of this array have been copied,
+       * or the end of the array is reached.
+       *
+       * @param xs    the array to fill.
+       * @param start the starting index within the destination array.
+       * @tparam B the type of the elements of the array.
+       */
+      inline def copyToNArray[B >: T](xs: NArray[B], start: Int): Int = a.copyToArray(xs, start, Int.MaxValue)
+
+      /** Copy elements of this array to another array.
+       * Fills the given array `xs` starting at index `start` with at most `len` values.
+       * Copying will stop once either all the elements of this array have been copied,
+       * or the end of the array is reached, or `len` elements have been copied.
+       *
+       * @param xs    the array to fill.
+       * @param start the starting index within the destination array.
+       * @param len   the maximal number of elements to copy.
+       * @tparam B the type of the elements of the array.
+       */
+      inline def copyToNArray[B >: T](xs: NArray[B], start: Int, len: Int): Int = a.copyToArray(xs, start, len)
+
+      /** Create a copy of this array with the specified element type. */
+      def toNArray[B >: T : ClassTag]: NArray[B] = {
+        val destination = narr.NArray.ofSize[B](a.length)
+        @annotation.unused val copied = copyToNArray[B](destination, 0)
+        //assert(copied == xs.length)
+        destination
+      }
+
+      def startsWithIterable[B >: T](that: IterableOnce[B], offset: Int = 0): Boolean = a.startsWith(that, offset)
+
+      def endsWithIterable[B >: T](that: scala.collection.Iterable[B]): Boolean = a.endsWith(that)
     }
   }
 }

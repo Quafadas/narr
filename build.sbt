@@ -3,7 +3,7 @@ import laika.format.Markdown
 import laika.helium.Helium
 import laika.helium.config.{HeliumIcon, IconLink}
 
-val appVersion:String = "0.0"
+val appVersion:String = "1.0"
 val globalScalaVersion = "3.3.4"
 
 ThisBuild / tlSitePublishBranch := Some("main")
@@ -22,6 +22,7 @@ ThisBuild / tlBaseVersion := appVersion
 ThisBuild / tlCiReleaseBranches := Seq("main")
 
 ThisBuild / tlSonatypeUseLegacyHost := false
+//ThisBuild / sonatypeCredentialHost := xerial.sbt.Sonatype.sonatypeLegacy
 
 lazy val narr = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .crossType(CrossType.Full)
@@ -70,5 +71,5 @@ lazy val tests = crossProject(JVMPlatform, JSPlatform, NativePlatform)
   .dependsOn(narr)
   .settings(
     name := "narr-tests",
-    libraryDependencies += "org.scalameta" %%% "munit" % "1.0.0" % Test
+    libraryDependencies += "org.scalameta" %%% "munit" % "1.0.4" % Test
   )
